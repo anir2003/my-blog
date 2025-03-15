@@ -3,7 +3,7 @@
   publish = ".next"
 
 [build.environment]
-  NODE_VERSION = "18.17.0"
+  NODE_VERSION = "18.18.0"
   NETLIFY_NEXT_PLUGIN_SKIP = "true"
   # Add OpenAI API key as a comment here. Don't hardcode the actual key in this file.
   # Set this in the Netlify dashboard for security: OPENAI_API_KEY
