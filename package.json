@@ -16,7 +16,7 @@
     "setup": "ts-node scripts/setup-blog.ts"
   },
   "dependencies": {
-    "@prisma/client": "^6.5.0",
+    "@prisma/client": "6.5.0",
     "@supabase/supabase-js": "^2.49.1",
     "@tailwindcss/typography": "^0.5.16",
     "@tiptap/extension-image": "^2.11.5",
@@ -33,7 +33,7 @@
     "next": "^15.2.2",
     "next-auth": "^4.24.6",
     "pg": "^8.14.0",
-    "prisma": "^6.5.0",
+    "prisma": "6.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.3.8",

@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "npm ci && npx prisma generate && npm run build"
   publish = ".next"
 
 [build.environment]
@@ -13,9 +13,9 @@
   # Disable sourcemaps processing
   NEXT_DISABLE_SOURCEMAPS = "true"
 
-# Add a pre-build command to force Prisma generate
-[build.lifecycle]
-  onPreBuild = "npx prisma generate"
+# We don't need the prebuild lifecycle hook anymore as it's in the command
+# [build.lifecycle]
+#   onPreBuild = "npx prisma generate"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"

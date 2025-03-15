@@ -15,6 +15,24 @@ try {
   
   if (fs.existsSync(prismaClientPath)) {
     console.log('✅ Prisma client generated successfully!');
+    
+    // Create a type definition file for the JS prisma client
+    const libPrismaDtsContent = `// Type declarations for lib/prisma.js
+declare module 'lib/prisma' {
+  import { PrismaClient } from '@prisma/client';
+  export const prisma: PrismaClient;
+  export default prisma;
+}`;
+    
+    // Ensure the lib directory exists
+    const typesDir = path.join(__dirname, 'types');
+    if (!fs.existsSync(typesDir)) {
+      fs.mkdirSync(typesDir, { recursive: true });
+    }
+    
+    // Write the declaration file
+    fs.writeFileSync(path.join(typesDir, 'prisma-client.d.ts'), libPrismaDtsContent);
+    console.log('✅ Created TypeScript declaration for Prisma client');
   } else {
     console.error('❌ Prisma client generation may have failed. Client not found at expected path.');
     process.exit(1);
