@@ -31,9 +31,10 @@ const nextConfig = {
   webpack(config) {
     return config;
   },
-  // Disable strict mode for route handlers
+  // External packages configuration updated for Next.js 15
   experimental: {
-    serverComponentsExternalPackages: ['prisma', '@prisma/client'],
+    // Updated from serverComponentsExternalPackages to serverExternalPackages
+    serverExternalPackages: ['prisma', '@prisma/client', 'bcrypt'],
   },
 };
 
