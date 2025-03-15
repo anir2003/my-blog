@@ -1,9 +1,17 @@
 // Script to resolve bcrypt native module issues on Netlify
-// Apply polyfills first to ensure globals are defined
+// Ensure browser globals are available
 try {
-  require('./node-polyfills');
+  require('./browser-globals');
 } catch (e) {
-  console.warn('Polyfills not loaded, continuing anyway:', e.message);
+  console.warn('Failed to load browser-globals directly:', e.message);
+  
+  // Fallback definitions if needed
+  if (typeof global.Request === 'undefined') {
+    global.Request = function Request() {
+      return { url: '', method: 'GET', headers: {} };
+    };
+    console.log('⚠️ Added emergency stub for Request');
+  }
 }
 
 const fs = require('fs');
@@ -63,6 +71,18 @@ fs.mkdirSync(bindingPath, { recursive: true });
 const napiPath = path.join(bindingPath, 'napi-v3');
 fs.mkdirSync(napiPath, { recursive: true });
 
+// Create a stub binary file to prevent "file too short" errors
+const binaryPath = path.join(napiPath, 'bcrypt_lib.node');
+const bufferSize = 1024;
+const stubBuffer = Buffer.alloc(bufferSize, 0);
+// Add ELF header bytes to make it look like a binary
+const elfHeader = [0x7F, 0x45, 0x4C, 0x46, 0x02, 0x01, 0x01, 0x00];
+for (let i = 0; i < elfHeader.length; i++) {
+  stubBuffer[i] = elfHeader[i];
+}
+fs.writeFileSync(binaryPath, stubBuffer);
+console.log(`Created stub binary at ${binaryPath}`);
+
 // Verify the structure
 console.log('✅ bcrypt module structure created');
 console.log('📂 Structure:');
@@ -71,6 +91,6 @@ console.log(`  - index.js (points to pure JS implementation)`);
 console.log(`  - package.json`);
 console.log(`  - lib/`);
 console.log(`    - binding/`);
-console.log(`      - napi-v3/ (empty directory to satisfy require paths)`);
+console.log(`      - napi-v3/ (empty directory with stub binary)`);
 
 console.log('✅ bcrypt fix completed!'); 

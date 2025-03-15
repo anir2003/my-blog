@@ -1,6 +1,10 @@
 // Robust build script for Netlify
-// Apply polyfills first to ensure globals are defined
-require('./node-polyfills');
+// Ensure browser globals are available - use both approaches for maximum compatibility
+try {
+  require('./browser-globals');
+} catch (e) {
+  console.warn('Failed to load browser-globals directly:', e.message);
+}
 
 const { execSync, spawnSync } = require('child_process');
 const fs = require('fs');
@@ -15,6 +19,28 @@ process.env.PATH = process.env.PATH && process.env.PATH
   .split(path.delimiter)
   .filter(p => !p.includes('.go') && !p.includes('go/bin'))
   .join(path.delimiter);
+
+// Verify that browser globals are available
+if (typeof global.Request !== 'undefined') {
+  console.log('✅ Browser globals are available in the build environment');
+} else {
+  console.error('❌ WARNING: Browser globals are NOT available! This may cause errors.');
+  
+  // Last-ditch effort to define browser globals
+  global.Request = global.Request || function Request() { 
+    console.log('Stub Request called');
+    return { url: '', method: 'GET', headers: {} };
+  };
+  
+  global.Response = global.Response || function Response() {
+    console.log('Stub Response called');
+    return { body: '', status: 200 };
+  };
+  
+  global.URL = global.URL || require('url').URL;
+  
+  console.log('⚠️ Added emergency stub implementations for browser globals');
+}
 
 console.log('🚀 Starting Netlify build process...');
 
@@ -38,7 +64,9 @@ function safeExec(command, errorMessage) {
       GOPATH: '',
       // Disable any other potential version managers
       ASDF_DIR: '',
-      MISE_ROOT: ''
+      MISE_ROOT: '',
+      // Ensure Node.js loads our polyfills
+      NODE_OPTIONS: process.env.NODE_OPTIONS || '--require=./register.js'
     };
     
     // Use a more reliable command execution method for Netlify

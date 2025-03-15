@@ -1,8 +1,16 @@
-// Apply polyfills first to ensure globals are defined
+// Ensure browser globals are available
 try {
-  require('./node-polyfills');
+  require('./browser-globals');
 } catch (e) {
-  console.warn('Polyfills not loaded, continuing anyway:', e.message);
+  console.warn('Failed to load browser-globals directly:', e.message);
+  
+  // Fallback definitions if needed
+  if (typeof global.Request === 'undefined') {
+    global.Request = function Request() {
+      return { url: '', method: 'GET', headers: {} };
+    };
+    console.log('⚠️ Added emergency stub for Request');
+  }
 }
 
 const fs = require('fs');
@@ -22,8 +30,10 @@ function ensureFileExists(filePath, content = '') {
     }
     // Create the file with empty content or default content
     fs.writeFileSync(filePath, content);
+    return true;
   } else {
     console.log(`File already exists: ${filePath}`);
+    return false;
   }
 }
 

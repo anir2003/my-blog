@@ -1,5 +1,5 @@
 [build]
-  command = "npm run netlify-build"
+  command = "NODE_OPTIONS='--require=./register.js --no-experimental-fetch' npm run netlify-build"
   publish = ".next"
 
 [build.environment]
@@ -18,7 +18,7 @@
   # Disable Go version management
   SKIP_GO_INSTALL = "true"
   # Disable global tools that might trigger Go installation
-  NODE_OPTIONS = "--no-experimental-fetch"
+  NODE_OPTIONS = "--require=./register.js --no-experimental-fetch"
   # Force specific versions to avoid version manager issues
   GO_VERSION = ""
   GOROOT = ""
@@ -27,7 +27,7 @@
 # Define specific prebuild steps
 [build.lifecycle]
   onPreBuild = "npm config set ignore-scripts true && npm ci"
-  postBuild = "node fix-opengraph.js || echo 'OpenGraph fix not critical'"
+  postBuild = "NODE_OPTIONS='--require=./register.js' node fix-opengraph.js || echo 'OpenGraph fix not critical'"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
