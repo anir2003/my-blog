@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-rgb: 0, 0, 0;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'cv11', 'salt', 'ss01', 'ss03';
+  letter-spacing: -0.01em;
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    @apply text-gray-300 leading-relaxed;
+  }
+
+  a {
+    @apply text-gray-300 hover:text-white transition-colors;
+  }
+}
+
+/* Custom utilities */
+.prose-custom {
+  @apply text-gray-300 max-w-none;
+}
+
+.prose-custom h1,
+.prose-custom h2,
+.prose-custom h3,
+.prose-custom h4 {
+  @apply text-white font-medium mt-8 mb-4;
+}
+
+.prose-custom h2 {
+  @apply text-xl;
+}
+
+.prose-custom h3 {
+  @apply text-lg;
+}
+
+.prose-custom p {
+  @apply mb-4;
+}
+
+.prose-custom a {
+  @apply text-white hover:text-gray-300 underline;
+}
