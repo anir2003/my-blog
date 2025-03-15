@@ -28,7 +28,25 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   // Add resilience to other build errors
-  webpack(config) {
+  webpack: (config, { isServer }) => {
+    // Force bcrypt to be treated as an external module
+    // This will prevent it from being bundled in client-side code
+    if (!isServer) {
+      config.externals = [...(config.externals || []), 'bcrypt', 'node-gyp'];
+    }
+
+    // Add fallback for node modules 
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        bcrypt: false,
+        crypto: false,
+        fs: false,
+        path: false,
+        os: false,
+      };
+    }
+
     return config;
   },
   // External packages configuration updated for Next.js 15
