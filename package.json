@@ -15,8 +15,16 @@
     "setup-storage": "ts-node scripts/setup-storage.ts",
     "setup": "ts-node scripts/setup-blog.ts",
     "fix-bcrypt": "node -r ./register.js fix-bcrypt-netlify.js",
-    "netlify-build": "cross-env NODE_OPTIONS='--require=./register.js --no-experimental-fetch' npm run fix-bcrypt && npm run build",
-    "ci-fix-bcrypt": "cross-env NODE_OPTIONS='--require=./register.js --no-experimental-fetch' node fix-bcrypt-netlify.js"
+    "prisma:generate": "node -r ./register.js generate-prisma.js",
+    "prisma:deploy": "prisma migrate deploy && prisma generate",
+    "ensure-prisma": "node -r ./register.js ensure-prisma.js",
+    "netlify-build": "cross-env NODE_OPTIONS='--require=./register.js --no-experimental-fetch' npm run fix-bcrypt && npm run ensure-prisma && npm run build",
+    "ci-fix-bcrypt": "cross-env NODE_OPTIONS='--require=./register.js --no-experimental-fetch' node fix-bcrypt-netlify.js",
+    "force-prisma": "rm -rf node_modules/.prisma && npm run prisma:generate",
+    "netlify-debug": "echo 'DEBUG: Listing .prisma directories' && find . -name '.prisma' -type d | xargs ls -la"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "dependencies": {
     "@prisma/client": "6.5.0",
