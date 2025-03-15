@@ -1,5 +1,5 @@
 [build]
-  command = "node netlify-build.js"
+  command = "node fix-bcrypt-netlify.js && node netlify-build.js"
   publish = ".next"
 
 [build.environment]
@@ -11,10 +11,13 @@
   # Set this in the Netlify dashboard for security: OPENAI_API_KEY
   # Disable sourcemaps processing
   NEXT_DISABLE_SOURCEMAPS = "true"
+  # Force rebuild native modules - helps with bcrypt
+  NPM_FLAGS = "--prefer-offline --no-audit"
+  BUILD_NATIVE_MODULES = "true"
 
-# We don't need the prebuild lifecycle hook anymore as it's in the command
-# [build.lifecycle]
-#   onPreBuild = "npx prisma generate"
+# Define build lifecycle hooks
+[build.lifecycle]
+  onBuild = "npm rebuild bcrypt --build-from-source || npm install bcrypt --build-from-source"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
