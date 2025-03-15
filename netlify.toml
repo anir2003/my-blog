@@ -15,10 +15,18 @@
   NPM_FLAGS = "--no-audit --no-fund"
   # Skip bcrypt native compilation
   SKIP_BCRYPT_NATIVE_BUILD = "true"
+  # Disable Go version management
+  SKIP_GO_INSTALL = "true"
+  # Disable global tools that might trigger Go installation
+  NODE_OPTIONS = "--no-experimental-fetch"
+  # Force specific versions to avoid version manager issues
+  GO_VERSION = ""
+  GOROOT = ""
+  GOPATH = ""
 
 # Define specific prebuild steps
 [build.lifecycle]
-  onPreBuild = "npm rebuild bcrypt --build-from-source || echo 'bcrypt rebuild failed, will use JS fallback'"
+  onPreBuild = "npm config set ignore-scripts true && npm rebuild bcrypt --build-from-source || echo 'bcrypt rebuild failed, will use JS fallback'"
   postBuild = "node fix-opengraph.js || echo 'OpenGraph fix not critical'"
 
 [[plugins]]

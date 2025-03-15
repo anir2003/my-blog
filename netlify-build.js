@@ -3,17 +3,46 @@ const { execSync, spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+// Disable any potential Go version manager commands
+process.env.SKIP_GO_INSTALL = 'true';
+process.env.GO_VERSION = '';
+process.env.GOROOT = '';
+process.env.GOPATH = '';
+process.env.PATH = process.env.PATH && process.env.PATH
+  .split(path.delimiter)
+  .filter(p => !p.includes('.go') && !p.includes('go/bin'))
+  .join(path.delimiter);
+
 console.log('🚀 Starting Netlify build process...');
 
-// Helper function to run commands safely
+// Modified safeExec function to explicitly avoid version manager commands
 function safeExec(command, errorMessage) {
   try {
     console.log(`Running: ${command}`);
+    
+    // Skip any commands related to Go installation or version management
+    if (command.includes('go ') || command.includes('mise') || command.includes('rtx') || command.includes('asdf')) {
+      console.log(`⚠️ Skipping potentially problematic command: ${command}`);
+      return true;
+    }
+    
+    // Explicitly set environment variables to avoid version manager interference
+    const customEnv = {
+      ...process.env,
+      SKIP_GO_INSTALL: 'true',
+      GO_VERSION: '',
+      GOROOT: '',
+      GOPATH: '',
+      // Disable any other potential version managers
+      ASDF_DIR: '',
+      MISE_ROOT: ''
+    };
+    
     // Use a more reliable command execution method for Netlify
     const result = spawnSync(command, [], { 
       shell: '/bin/bash', // Explicitly use bash to avoid any shell alias issues
       stdio: 'inherit',
-      env: { ...process.env }
+      env: customEnv
     });
     
     if (result.status !== 0) {
