@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "next dev -p 3004",
-    "prebuild": "node generate-prisma.js",
+    "prebuild": "node generate-prisma.js && node fix-imports.js",
     "build": "next build",
     "postbuild": "node fix-opengraph.js",
     "start": "next start -p 3004",
