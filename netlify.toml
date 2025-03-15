@@ -7,17 +7,16 @@
   NETLIFY_NEXT_PLUGIN_SKIP = "true"
   # Disable Prisma's automatic generation to fix caching issues
   PRISMA_SKIP_POSTINSTALL_GENERATE = "true"
-  # Add OpenAI API key as a comment here. Don't hardcode the actual key in this file.
-  # Set this in the Netlify dashboard for security: OPENAI_API_KEY
   # Disable sourcemaps processing
   NEXT_DISABLE_SOURCEMAPS = "true"
-  # Force rebuild native modules - helps with bcrypt
-  NPM_FLAGS = "--prefer-offline --no-audit"
-  BUILD_NATIVE_MODULES = "true"
+  # Force standard shell to avoid any 'mise' or custom shell issues
+  SHELL = "/bin/bash"
+  # Use standard npm flags
+  NPM_FLAGS = "--no-audit --no-fund"
 
-# Define build lifecycle hooks
+# Define specific prebuild step for bcrypt
 [build.lifecycle]
-  onBuild = "npm rebuild bcrypt --build-from-source || npm install bcrypt --build-from-source"
+  onPreBuild = "npm rebuild bcrypt --build-from-source"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
