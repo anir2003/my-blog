@@ -4,6 +4,7 @@
 
 [build.environment]
   NODE_VERSION = "18.18.0"
+  PYTHON_VERSION = "3.9"
   NETLIFY_NEXT_PLUGIN_SKIP = "true"
   # Add OpenAI API key as a comment here. Don't hardcode the actual key in this file.
   # Set this in the Netlify dashboard for security: OPENAI_API_KEY
@@ -18,7 +19,7 @@
 
 # Custom local plugin to fix missing files
 [[plugins]]
-  package = "./netlify-build-plugin.js"
+  package = "./netlify-nextjs-fix-plugin"
 
 # Remove the redirect as it might interfere with Next.js routing
 # [[redirects]]

@@ -1,0 +1,8 @@
+{
+  "name": "netlify-nextjs-fix-plugin",
+  "version": "1.0.0",
+  "description": "Custom plugin to fix missing files in Next.js 15 deployments",
+  "main": "index.js",
+  "author": "",
+  "license": "MIT"
+} 
