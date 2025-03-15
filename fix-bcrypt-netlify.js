@@ -1,4 +1,11 @@
 // Script to resolve bcrypt native module issues on Netlify
+// Apply polyfills first to ensure globals are defined
+try {
+  require('./node-polyfills');
+} catch (e) {
+  console.warn('Polyfills not loaded, continuing anyway:', e.message);
+}
+
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');

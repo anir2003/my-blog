@@ -1,5 +1,5 @@
 [build]
-  command = "node fix-bcrypt-netlify.js && npm run build"
+  command = "npm run netlify-build"
   publish = ".next"
 
 [build.environment]
@@ -26,7 +26,7 @@
 
 # Define specific prebuild steps
 [build.lifecycle]
-  onPreBuild = "npm config set ignore-scripts true && npm rebuild bcrypt --build-from-source || echo 'bcrypt rebuild failed, will use JS fallback'"
+  onPreBuild = "npm config set ignore-scripts true && npm ci"
   postBuild = "node fix-opengraph.js || echo 'OpenGraph fix not critical'"
 
 [[plugins]]

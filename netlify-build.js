@@ -1,4 +1,7 @@
 // Robust build script for Netlify
+// Apply polyfills first to ensure globals are defined
+require('./node-polyfills');
+
 const { execSync, spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
