@@ -1,5 +1,5 @@
 [build]
-  command = "node fix-bcrypt-netlify.js && node netlify-build.js"
+  command = "node fix-bcrypt-netlify.js && npm run build"
   publish = ".next"
 
 [build.environment]
@@ -13,10 +13,13 @@
   SHELL = "/bin/bash"
   # Use standard npm flags
   NPM_FLAGS = "--no-audit --no-fund"
+  # Skip bcrypt native compilation
+  SKIP_BCRYPT_NATIVE_BUILD = "true"
 
-# Define specific prebuild step for bcrypt
+# Define specific prebuild steps
 [build.lifecycle]
-  onPreBuild = "npm rebuild bcrypt --build-from-source"
+  onPreBuild = "npm rebuild bcrypt --build-from-source || echo 'bcrypt rebuild failed, will use JS fallback'"
+  postBuild = "node fix-opengraph.js || echo 'OpenGraph fix not critical'"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
