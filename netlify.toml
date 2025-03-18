@@ -35,11 +35,6 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
-  
-  [plugins.inputs]
-    enable_middleware = true
-    enable_function_logs = true
-    use_edge_functions = true
 
 [[plugins]]
   package = "netlify-plugin-cache-nextjs"
