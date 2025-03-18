@@ -138,3 +138,52 @@ For production deployment, make sure to:
 1. Update the `NEXTAUTH_SECRET` with a strong, unique value
 2. Set the `NEXTAUTH_URL` to your production URL
 You can also deploy to other platforms that support Next.js applications, such as Netlify, AWS Amplify, or a traditional server setup.
+
+## Deployment on Netlify
+
+This project is configured for seamless deployment on Netlify.
+
+### One-Click Deploy
+
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/yourusername/my-blog)
+
+### Manual Deployment
+
+1. Push your code to a GitHub repository
+
+2. Log in to Netlify and click "New site from Git"
+
+3. Choose your repository and use these build settings:
+   - Build command: `npm run netlify-build`
+   - Publish directory: `.next`
+   - Environment variables: Add the same variables from your `.env.local` file
+
+4. Click "Deploy site"
+
+### Troubleshooting Netlify Deployment
+
+If you encounter issues with the deployment:
+
+1. Make sure your Node.js version is set to 18.18.0 (check `.node-version` file)
+
+2. The repository includes special scripts to handle:
+   - bcrypt native bindings (replaced with JS implementation)
+   - Prisma client generation
+   - Next.js build compatibility
+
+3. Check Netlify build logs for specific errors
+
+## Project Structure
+
+```
+my-blog/
+├── app/              # Next.js application
+├── lib/              # Utility functions and shared code
+├── prisma/           # Prisma schema and migrations
+├── public/           # Static assets
+└── scripts/          # Utility scripts
+```
+
+## License
+
+MIT

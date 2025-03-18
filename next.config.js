@@ -21,39 +21,52 @@ const nextConfig = {
   productionBrowserSourceMaps: false,
   // Add resilience to TypeScript errors during build
   typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
+    // Allow production builds to successfully complete even if
     // your project has type errors.
-    // !! WARN !!
     ignoreBuildErrors: true,
   },
   // Add resilience to other build errors
   webpack: (config, { isServer }) => {
-    // Force bcrypt to be treated as an external module
-    // This will prevent it from being bundled in client-side code
+    // Only add these exceptions on the client side
     if (!isServer) {
-      config.externals = [...(config.externals || []), 'bcrypt', 'node-gyp'];
-    }
+      // Force bcrypt to be treated as external to avoid client-side import attempts
+      if (Array.isArray(config.externals)) {
+        config.externals.push('bcrypt');
+      } else {
+        config.externals = ['bcrypt'];
+      }
 
-    // Add fallback for node modules 
-    if (!isServer) {
+      // Add fallbacks for node modules that shouldn't be bundled
       config.resolve.fallback = {
         ...config.resolve.fallback,
         bcrypt: false,
+        'bcrypt-nodejs': false,
+        argon2: false,
+        'node-gyp': false,
         crypto: false,
         fs: false,
         path: false,
         os: false,
+        module: false,
+        worker_threads: false
       };
     }
 
     return config;
   },
-  // External packages configuration updated for Next.js 15
+  // External packages configuration for Next.js 15+
   experimental: {
     // Updated from serverComponentsExternalPackages to serverExternalPackages
-    serverExternalPackages: ['prisma', '@prisma/client', 'bcrypt'],
+    serverExternalPackages: ['bcrypt', 'prisma', '@prisma/client'],
+    // Enable better error handling
+    serverActionRequestDeduping: true,
+    serverMinification: true,
   },
+  // Disable static optimization to avoid empty pages on deploy
+  distDir: '.next',
+  trailingSlash: false,
+  // Ensure compatibility with Netlify Edge Functions
+  output: 'standalone',
 };
 
 module.exports = nextConfig; 

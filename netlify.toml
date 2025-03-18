@@ -1,53 +1,56 @@
 [build]
-  command = "NODE_OPTIONS='--require=./register.js --no-experimental-fetch' npm run netlify-build"
+  command = "npm run netlify-build"
   publish = ".next"
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':(exclude)netlify.toml'"
 
 [build.environment]
   NODE_VERSION = "18.18.0"
-  NETLIFY_NEXT_PLUGIN_SKIP = "true"
-  # Disable Prisma's automatic generation to fix caching issues
-  PRISMA_SKIP_POSTINSTALL_GENERATE = "true"
-  # Disable sourcemaps processing
-  NEXT_DISABLE_SOURCEMAPS = "true"
-  # Force standard shell to avoid any 'mise' or custom shell issues
-  SHELL = "/bin/bash"
-  # Use standard npm flags
-  NPM_FLAGS = "--no-audit --no-fund"
-  # Skip bcrypt native compilation
-  SKIP_BCRYPT_NATIVE_BUILD = "true"
-  # Disable Go version management
-  SKIP_GO_INSTALL = "true"
-  # Disable global tools that might trigger Go installation
-  NODE_OPTIONS = "--require=./register.js --no-experimental-fetch"
-  # Force specific versions to avoid version manager issues
-  GO_VERSION = ""
-  GOROOT = ""
-  GOPATH = ""
-  # Ensure Prisma uses SQLite in production
+  NPM_VERSION = "10.2.4"
+  NEXT_TELEMETRY_DISABLED = "1"
+  
+  # Next.js specific settings
+  NEXT_SKIP_TYPESCRIPT_CHECK = "1"
+  NEXT_DISABLE_SOURCEMAPS = "1"
+  
+  # Disable experimental features
+  NODE_OPTIONS = "--no-experimental-fetch"
+  
+  # Database settings
   DATABASE_URL = "file:./prisma/dev.db"
-  # Avoid Prisma cache issues by forcing re-generation
-  PRISMA_SCHEMA_DISABLE_CACHE = "true"
-  # Skip TypeScript type checking during build
-  NEXT_SKIP_TYPESCRIPT_CHECK = "true"
+  
+  # Disable Prisma telemetry and postinstall
+  PRISMA_TELEMETRY_DISABLED = "1"
+  PRISMA_SKIP_POSTINSTALL_GENERATE = "1"
+  PRISMA_SCHEMA_DISABLE_CACHE = "1"
+  
+  # Shell settings
+  SHELL = "/bin/bash"
+  
+  # Bcrypt settings
+  SKIP_BCRYPT_NATIVE_BUILD = "1"
 
 # Define specific prebuild steps
 [build.lifecycle]
-  onPreBuild = "npm ci && node -r ./register.js ensure-prisma.js"
-  postBuild = "NODE_OPTIONS='--require=./register.js' node fix-opengraph.js || echo 'OpenGraph fix not critical'"
+  onBuild = "cp prisma/schema.prisma prisma/schema.backup.prisma || true"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+  
+  [plugins.inputs]
+    enable_middleware = true
+    enable_function_logs = true
+    use_edge_functions = true
 
 [[plugins]]
   package = "netlify-plugin-cache-nextjs"
 
-# Custom local plugin to fix missing files
-[[plugins]]
-  package = "./netlify-nextjs-fix-plugin"
+# Disable asset optimization to avoid conflicts with Next.js
+[build.processing]
+  skip_processing = true
 
-# Remove the redirect as it might interfere with Next.js routing
-# [[redirects]]
-#   from = "/*"
-#   to = "/index.html"
-#   status = 200
-#   force = false 
+# Add a redirect for SPA fallback
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/nextjs-middleware"
+  status = 200
+  force = false 
