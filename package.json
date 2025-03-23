@@ -14,8 +14,7 @@
     "setup-storage": "ts-node scripts/setup-storage.ts",
     "setup": "ts-node scripts/setup-blog.ts",
     "postinstall": "node prisma-generate.js",
-    "netlify-build": "npm run prepare-build && next build && node fix-opengraph.js",
-    "prepare-build": "npm run prepare-bcrypt && npm run prepare-prisma && npm run fix-imports",
+    "netlify-build": "node fix-bcrypt-standalone.js && node prisma-generate.js && node fix-imports.js && next build",
     "prepare-bcrypt": "node fix-bcrypt-standalone.js",
     "prepare-prisma": "node prisma-generate.js",
     "fix-imports": "node fix-imports.js"

@@ -58,13 +58,7 @@ const nextConfig = {
   experimental: {
     // Updated from serverComponentsExternalPackages to serverExternalPackages
     serverExternalPackages: ['bcrypt', 'prisma', '@prisma/client'],
-    // Enable better error handling
-    serverActionRequestDeduping: true,
-    serverMinification: true,
   },
-  // Disable static optimization to avoid empty pages on deploy
-  distDir: '.next',
-  trailingSlash: false,
   // Ensure compatibility with Netlify Edge Functions
   output: 'standalone',
 };

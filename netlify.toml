@@ -1,5 +1,5 @@
 [build]
-  command = "npm run netlify-build"
+  command = "node netlify.js && node fix-bcrypt-standalone.js && node prisma-generate.js && node fix-imports.js && next build && node fix-build.js"
   publish = ".next"
   ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':(exclude)netlify.toml'"
 
@@ -11,6 +11,7 @@
   # Next.js specific settings
   NEXT_SKIP_TYPESCRIPT_CHECK = "1"
   NEXT_DISABLE_SOURCEMAPS = "1"
+  NEXT_RUNTIME = "nodejs"
   
   # Disable experimental features
   NODE_OPTIONS = "--no-experimental-fetch"
@@ -29,10 +30,6 @@
   # Bcrypt settings
   SKIP_BCRYPT_NATIVE_BUILD = "1"
 
-# Define specific prebuild steps
-[build.lifecycle]
-  onBuild = "cp prisma/schema.prisma prisma/schema.backup.prisma || true"
-
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
@@ -41,11 +38,4 @@
 
 # Disable asset optimization to avoid conflicts with Next.js
 [build.processing]
-  skip_processing = true
-
-# Add a redirect for SPA fallback
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/nextjs-middleware"
-  status = 200
-  force = false 
+  skip_processing = true 
