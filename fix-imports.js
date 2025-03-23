@@ -7,6 +7,68 @@ const fs = require('fs');
 const path = require('path');
 const { exec, execSync } = require('child_process');
 
+// Polyfill for fetch API objects in Node.js environment
+if (typeof globalThis.Request === 'undefined') {
+  try {
+    // Try to load node-fetch if available
+    const nodeFetch = require('node-fetch');
+    globalThis.Request = nodeFetch.Request;
+    globalThis.Response = nodeFetch.Response;
+    globalThis.Headers = nodeFetch.Headers;
+    globalThis.fetch = nodeFetch;
+    console.log('✅ Added node-fetch polyfill in fix-imports.js');
+  } catch (e) {
+    // Provide minimal implementations if node-fetch is not available
+    console.log('⚠️ node-fetch not available, creating minimal Request polyfill');
+    
+    // Basic implementation of Request
+    globalThis.Request = class Request {
+      constructor(input, init = {}) {
+        this.url = input;
+        this.method = init.method || 'GET';
+        this.headers = init.headers || {};
+        this.body = init.body || null;
+      }
+    };
+    
+    // Basic implementation of Response
+    globalThis.Response = class Response {
+      constructor(body, init = {}) {
+        this.body = body;
+        this.status = init.status || 200;
+        this.statusText = init.statusText || '';
+        this.headers = init.headers || {};
+      }
+      
+      json() {
+        return Promise.resolve(JSON.parse(this.body));
+      }
+      
+      text() {
+        return Promise.resolve(String(this.body));
+      }
+    };
+    
+    // Basic implementation of Headers
+    globalThis.Headers = class Headers {
+      constructor(init = {}) {
+        this._headers = {};
+        Object.keys(init).forEach(key => {
+          this._headers[key.toLowerCase()] = init[key];
+        });
+      }
+      
+      get(name) {
+        return this._headers[name.toLowerCase()] || null;
+      }
+      
+      set(name, value) {
+        this._headers[name.toLowerCase()] = value;
+      }
+    };
+  }
+}
+
 console.log('🔍 Starting import path fixes...');
 
 // Walk a directory and return all files of specified extensions
